@@ -1,0 +1,19 @@
+{
+  "name": "unminifyjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:champkeh/unminifyjs.git",
+  "author": "champkeh <champion.ge@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.5",
+    "@babel/generator": "^7.23.5",
+    "@babel/parser": "^7.23.5",
+    "@babel/template": "^7.22.15",
+    "@babel/traverse": "^7.23.5",
+    "@babel/types": "^7.23.5"
+  }
+}
