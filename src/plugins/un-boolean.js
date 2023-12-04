@@ -1,6 +1,7 @@
 const types = require("@babel/types")
 
-function unBooleanPlugin(api, options, dirname) {
+
+module.exports = function () {
     return {
         visitor: {
             UnaryExpression(path, state) {
@@ -11,5 +12,3 @@ function unBooleanPlugin(api, options, dirname) {
         }
     }
 }
-
-module.exports = unBooleanPlugin

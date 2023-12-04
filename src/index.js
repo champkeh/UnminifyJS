@@ -1,9 +1,10 @@
 const fs = require('fs')
 const path = require('path')
 const babel = require('@babel/core')
-const preset = require('./plugins/preset')
+const options = require('./options')
 
-const sourceCode = fs.readFileSync(path.resolve(__dirname, 'case.js'), {encoding: 'utf-8'})
+const sourceFile = path.resolve(__dirname, '../input/enhance.js')
 
-const result = babel.transformSync(sourceCode, preset)
-console.log(result.code)
+const result = babel.transformFileSync(sourceFile, options)
+
+fs.writeFileSync(path.resolve(__dirname, '../output/enhance.js'), result.code)

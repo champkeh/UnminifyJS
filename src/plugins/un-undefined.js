@@ -1,6 +1,7 @@
 const types = require("@babel/types");
 
-function unUndefinedPlugin(api, options, dirname) {
+
+module.exports = function () {
     return {
         visitor: {
             UnaryExpression(path, state) {
@@ -11,5 +12,3 @@ function unUndefinedPlugin(api, options, dirname) {
         }
     }
 }
-
-module.exports = unUndefinedPlugin
