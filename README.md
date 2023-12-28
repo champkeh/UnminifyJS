@@ -69,6 +69,11 @@ Separate sequence expression into multiple statements.
 + a()
 + b()
 + while (c++ > 0) {}
+
+- return a(), b(), c()
++ a()
++ b()
++ return c()
 ```
 
 ### `un-variable-merging`

@@ -1,12 +1,14 @@
 const types = require("@babel/types")
 
-
 module.exports = function () {
     return {
         visitor: {
-            UnaryExpression(path, state) {
+            UnaryExpression(path) {
                 if (path.node.operator === '!' && types.isNumericLiteral(path.node.argument)) {
-                    path.replaceWith(types.booleanLiteral(!Boolean(path.node.argument.value)))
+                    const value = path.node.argument.value
+                    if (value === 0 || value === 1) {
+                        path.replaceWith(types.booleanLiteral(!value));
+                    }
                 }
             }
         }

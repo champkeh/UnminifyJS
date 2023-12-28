@@ -7,7 +7,10 @@ function resolvePlugin(pluginPath) {
 const plugins = [
     './un-boolean.js',
     './un-undefined.js',
+    './un-infinity.js',
+    './un-numeric-literal.js',
     './un-sequence-expression.js',
+    // './test.js'
 ].map(pluginPath => resolvePlugin(pluginPath))
 
 
