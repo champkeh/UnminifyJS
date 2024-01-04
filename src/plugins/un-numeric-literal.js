@@ -7,6 +7,9 @@ module.exports = function () {
             NumericLiteral(path) {
                 const value = path.node.value;
 
+                if (path.node.extra === undefined) {
+                    debugger
+                }
                 if (!isNaN(value) && path.node.extra.raw !== String(value)) {
                     path.replaceWith(t.addComment(t.numericLiteral(value), 'trailing', ` ${path.node.extra.raw} `));
                     path.skip()

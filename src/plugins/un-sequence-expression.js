@@ -20,7 +20,7 @@ module.exports = function () {
     return {
         visitor: {
             SequenceExpression(path) {
-                debugger
+                // debugger
 
                 if (types.isExpressionStatement(path.parent)) {
                     path.parentPath.replaceWithMultiple(path.node.expressions.map(e => types.expressionStatement(e)))
