@@ -1,18 +1,8 @@
-let j = require('jscodeshift')
+// @ts-nocheck
 
-// 需要使用 babylon 解析器
-j = j.withParser('babylon')
+import j, {ASTNode, Collection, ConditionalExpression, Transform} from "jscodeshift"
 
-
-const source = `
-a ? b() : c ? d() : e() ? f() : g()
-let xx = a ? b() : c ? d() : e() ? f() : g()
-`
-
-const root = j(source)
-
-
-function collectConditionals(node, conditionals = []) {
+function collectConditionals(node: ConditionalExpression, conditionals: ConditionalExpression[] = []) {
     conditionals.push(node)
     if (node.alternate.type === 'ConditionalExpression') {
         collectConditionals(node.alternate, conditionals)
@@ -20,16 +10,17 @@ function collectConditionals(node, conditionals = []) {
     return conditionals
 }
 
-function handle(root) {
+// a ? b() : c ? d() : e() ? f() : g()
+function handleConditionalExpression(root: Collection<any>) {
     root.find(j.ConditionalExpression)
         .filter(path => path.name === 'expression' && path.node.alternate.type === 'ConditionalExpression')
         .forEach(path => {
             const node = path.node
-            const stack = []
+            const stack: ConditionalExpression[] = []
             collectConditionals(node, stack)
 
             while (stack.length) {
-                const conditionalNode = stack.pop()
+                const conditionalNode: ConditionalExpression = stack.pop()!
 
                 const ifStatement = j.ifStatement(
                     conditionalNode.test,
@@ -38,7 +29,7 @@ function handle(root) {
                 )
 
                 if (stack.length > 0) {
-                    stack[stack.length - 1].alternate = ifStatement
+                    stack[stack.length - 1].alternate = ifStatement as unknown as ConditionalExpression
                 }
             }
         })
@@ -50,7 +41,10 @@ function handle(root) {
                 node.alternate,
             )
         })
+}
 
+// let x = a ? b() : c ? d() : e() ? f() : g()
+function handleConditionalDeclaration(root: Collection<any>) {
     root.find(j.VariableDeclaration)
         .filter(path => path.node.declarations.length === 1 && path.node.declarations[0].init && path.node.declarations[0].init.type === 'ConditionalExpression')
         .forEach(path => {
@@ -100,7 +94,17 @@ function handle(root) {
         .replaceWith(path => path.node)
 }
 
-handle(root)
+const transformer: Transform = (file, api) => {
+    const {j} = api
+    const root = j(file.source)
 
+    // a ? b() : c ? d() : e() ? f() : g()
+    handleConditionalExpression(root)
 
-console.log(root.toSource())
+    // let x = a ? b() : c ? d() : e() ? f() : g()
+    handleConditionalDeclaration(root)
+
+    return root.toSource()
+}
+
+export default transformer
