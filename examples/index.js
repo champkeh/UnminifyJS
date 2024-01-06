@@ -1,60 +1,30 @@
 let j = require('jscodeshift')
-
-
-console.log(defineTest)
+const {SequenceExpression} = require("jscodeshift");
 
 // 需要使用 babylon 解析器
 j = j.withParser('babylon')
 
 
 const source = `
-const menu = {
-  beverages: {
-    soft: {
-      water: 2,
-      juice: 3,
-    },
-  },
-  happyHour: {
-    beverages: {
-      soft: {
-        water: 1,
-        juice: 2,
-      },
-    },
-  },
-};
+for (var t, e, n = this.length; 0 !== n;) e = Math.floor(Math.random() * n), t = this[n -= 1], this[n] = this[e], this[e] = t;
 `
 
-function isDirectChildOfObject(parent, child) {
-    let current = child.parentPath;
-    // Ignoring object expressions
-    while (current.node && current.node.type === "ObjectExpression") {
-        current = current.parentPath;
-    }
+const root = j(source)
 
-    return current.node === parent;
+function handle(root) {
+    root.find(j.ExpressionStatement)
+        .filter(path => path.node.expression.type === 'SequenceExpression')
+        .replaceWith(path => {
+            console.log(path.name)
+
+            const sequenceExpression = path.node.expression
+            const expressions = sequenceExpression.expressions
+
+            return expressions.map(expr => j.expressionStatement(expr))
+        })
 }
 
-const root = j(source)
-const rootPaths = root
-    .find(j.VariableDeclarator, {
-        id: {name: "menu"},
-    })
+handle(root)
 
-// console.log(rootPaths)
-// console.log(rootPaths.get(0).node === rootPaths.paths()[0].node)
-// console.log(rootPaths.paths()[0].get(0).get(0).get(0).node === rootPaths.paths()[0].node)
-// console.log(rootPaths.paths()[0])
-// console.log(rootPaths.paths()[0].get(0))
-
-rootPaths.find(j.ObjectProperty, {key: {name: "beverages"}})
-    .filter((path) => isDirectChildOfObject(rootPaths.get(0).node, path))
-    .replaceWith((nodePath) => {
-        const {node} = nodePath;
-
-        node.key.name = "theFoundBeverage";
-        return node;
-    });
 
 console.log(root.toSource())

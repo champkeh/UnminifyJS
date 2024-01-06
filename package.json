@@ -6,6 +6,7 @@
   "author": "champkeh <champion.ge@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "example": "node examples/index.js",
     "transform": "jscodeshift -t transforms/index.ts examples/input/case.js --dry --print",
     "test": "jest"
   },

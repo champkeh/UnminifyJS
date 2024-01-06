@@ -2,8 +2,8 @@ jest.autoMockOff()
 
 const {defineTest} = require('jscodeshift/dist/testUtils');
 
-describe('un-sequence-expression', () => {
-    defineTest(__dirname, 'un-sequence-expression')
+describe('un-variable-merging', () => {
+    defineTest(__dirname, 'un-variable-merging')
 })
 
 export {}

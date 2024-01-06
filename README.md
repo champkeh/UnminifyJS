@@ -55,6 +55,37 @@ A comment will be added to indicate the original value.
 + 291 /* 0x123 */
 ```
 
+### `un-block`
+```diff
+- if (true) foo()
++ if (true) { foo() }
+
+- if (false) foo() else bar()
++ if (false) { foo() } else { bar() }
+
+- for (;;) foo()
++ for (;;) { foo() }
+```
+
+### `un-variable-merging`
+
+Separate variable declarators into multiple statements.
+
+```diff
+- var a = 1, b = true, c = func(d);
++ var a = 1;
++ var b = true;
++ var c = func(d);
+```
+
+Separate variable declarators that are not used in for statements.
+
+```diff
+- for (var i = 0, j = 0, k = 0; j < 10; k++) {}
++ var i = 0;
++ for (var j = 0, k = 0; j < 10; k++) {}
+```
+
 ### `un-sequence-expression`
 
 Separate sequence expression into multiple statements.
@@ -76,24 +107,7 @@ Separate sequence expression into multiple statements.
 + return c()
 ```
 
-### `un-variable-merging`
 
-Separate variable declarators into multiple statements.
-
-```diff
-- var a = 1, b = true, c = func(d);
-+ var a = 1;
-+ var b = true;
-+ var c = func(d);
-```
-
-Separate variable declarators that are not used in for statements.
-
-```diff
-- for (var i = 0, j = 0, k = 0; j < 10; k++) {}
-+ var i = 0;
-+ for (var j = 0, k = 0; j < 10; k++) {}
-```
 
 ### `un-assignment-expression`
 

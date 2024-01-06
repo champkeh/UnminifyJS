@@ -3,6 +3,9 @@ import unBoolean from "./un-boolean"
 import unUndefined from "./un-undefined"
 import unInfinity from "./un-infinity"
 import unNumericLiteral from "./un-numeric-literal"
+import unSequenceExpression from "./un-sequence-expression"
+import unVariableMerging from "./un-variable-merging"
+import unBlock from "./un-block";
 
 const transformer: Transform = (file, api, options) => {
     let source = file.source
@@ -12,6 +15,9 @@ const transformer: Transform = (file, api, options) => {
         unUndefined,
         unInfinity,
         unNumericLiteral,
+        unBlock,
+        unVariableMerging,
+        unSequenceExpression,
     ]
     transformerQueue.forEach(transformer => {
         if (typeof source === "undefined") {
