@@ -1,9 +1,8 @@
 import {Transform} from "jscodeshift"
 
-const transform: Transform = (file, api, options) => {
+const transformer: Transform = (file, api) => {
     const {j} = api
-    const {source} = file
-    const root = j(source)
+    const root = j(file.source)
 
     // 1/0 => Infinity
     root.find(j.BinaryExpression, {
@@ -34,4 +33,4 @@ const transform: Transform = (file, api, options) => {
     return root.toSource()
 }
 
-export default transform
+export default transformer

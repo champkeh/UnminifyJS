@@ -1,9 +1,8 @@
 import {Transform} from "jscodeshift"
 
-const transform: Transform = (file, api, options) => {
+const transformer: Transform = (file, api) => {
     const {j} = api
-    const {source} = file
-    const root = j(source)
+    const root = j(file.source)
 
     // 1e3 => 1000 /* 1e3 */
     // 0x10 => 16 /* 0x10 */
@@ -32,4 +31,4 @@ const transform: Transform = (file, api, options) => {
     return root.toSource()
 }
 
-export default transform
+export default transformer

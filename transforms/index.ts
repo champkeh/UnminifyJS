@@ -4,25 +4,25 @@ import unUndefined from "./un-undefined"
 import unInfinity from "./un-infinity"
 import unNumericLiteral from "./un-numeric-literal"
 
-const transform: Transform = (file, api, options) => {
+const transformer: Transform = (file, api, options) => {
     let source = file.source
 
-    const transQueue = [
+    const transformerQueue = [
         unBoolean,
         unUndefined,
         unInfinity,
         unNumericLiteral,
     ]
-    transQueue.forEach(trans => {
+    transformerQueue.forEach(transformer => {
         if (typeof source === "undefined") {
             return
         }
-        const newSource = trans({...file, source: source}, api, options)
+        const newSource = transformer({...file, source: source}, api, options)
         source = newSource || source
     })
     return source
 };
 
-export default transform
+export default transformer
 
 export const parser = "babylon"

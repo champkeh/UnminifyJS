@@ -1,10 +1,9 @@
 import {Transform} from "jscodeshift"
 
 
-const transform: Transform = (file, api, options) => {
+const transformer: Transform = (file, api) => {
     const {j} = api
-    const {source} = file
-    const root = j(source)
+    const root = j(file.source)
 
     // !0 => true
     root.find(j.UnaryExpression, {
@@ -23,4 +22,4 @@ const transform: Transform = (file, api, options) => {
     return root.toSource()
 }
 
-export default transform
+export default transformer
