@@ -1,4 +1,4 @@
-# unminifyjs
+# UnminifyJS
 
 Convert minified js code to readable source code.
 
@@ -7,9 +7,6 @@ Convert minified js code to readable source code.
 ## Readability
 
 ### `un-boolean`
-
-Converts minified `boolean` to simple `true`/`false`
-
 ```diff
 - !0
 + true
@@ -19,18 +16,12 @@ Converts minified `boolean` to simple `true`/`false`
 ```
 
 ### `un-undefined`
-
-Converts `void 0` to `undefined`
-
 ```diff
-- if (input === void 0) {}
-+ if (input === undefined) {}
+- void 0
++ undefined
 ```
 
 ### `un-infinity`
-
-Converts `1 / 0` to `Infinity`
-
 ```diff
 - 1 / 0
 + Infinity
@@ -40,10 +31,6 @@ Converts `1 / 0` to `Infinity`
 ```
 
 ### `un-numeric-literal`
-
-Converts numeric literal to its decimal representation.
-A comment will be added to indicate the original value.
-
 ```diff
 - 1e3
 + 1000 /* 1e3 */
@@ -57,14 +44,25 @@ A comment will be added to indicate the original value.
 
 ### `un-block`
 ```diff
-- if (true) foo()
-+ if (true) { foo() }
+- if (x) foo()
++ if (x) {
++   foo()
++ }
 
-- if (false) foo() else bar()
-+ if (false) { foo() } else { bar() }
+- if (x)
+-   foo()
+- else
+-   bar()
++ if (x) {
++   foo()
++ } else {
++   bar()
++ }
 
 - for (;;) foo()
-+ for (;;) { foo() }
++ for (;;) {
++   foo()
++ }
 ```
 
 ### `un-variable-merging`
@@ -106,7 +104,6 @@ Separate sequence expression into multiple statements.
 + b()
 + return c()
 ```
-
 
 
 ### `un-assignment-expression`
