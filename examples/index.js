@@ -6,18 +6,18 @@ j = j.withParser('babylon')
 
 
 const source = `
-"use strict"
+var os;
+var isMacOS = "MacOS" === os;
+var isWindows = "Windows" === os;
+var isLinux = "Linux" === os;
 
-function foo() {
-    "use strict"
-    const a = 1;
-    if (a) {
-        return a;
-    }
-    return void 0;
-}
-const bar = () => {
-    return void foo();
+var c = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase()));
+
+var p = {
+    isMacOS: isMacOS,
+    isWin: isWindows,
+    isLinux: isLinux,
+    isSafari: c,
 }
 `
 
@@ -25,7 +25,14 @@ const root = j(source)
 
 
 function handle(root) {
-    root.find(j.Directive).remove()
+    root
+        .find(j.VariableDeclarator)
+        .filter(path => path.node.id.name === 'c')
+        .forEach(path => {
+            console.log(path.scope)
+            console.log(j(path).closestScope())
+        })
+        .renameTo('xxx')
 }
 
 handle(root)

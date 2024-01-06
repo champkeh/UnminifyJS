@@ -200,6 +200,23 @@ const bar = () => {
 - Object.prototype.hasOwnProperty;
 ```
 
+### `smart-rename`
+```diff
+- const {
+-   gql: t,
+-   dispatchers: o,
+-   listener: i
+- } = n;
+- o.delete(t, i);
++ const {
++   gql,
++   dispatchers,
++   listener
++ } = n;
++ dispatchers.delete(gql, listener);
+```
+
+
 ### `un-type-constructor` (Unsafe)
 
 Restore type constructors from minified code.

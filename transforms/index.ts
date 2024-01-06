@@ -1,4 +1,5 @@
 import {type Transform} from "jscodeshift"
+import {format} from "../utils/formatter"
 import unBoolean from "./un-boolean"
 import unUndefined from "./un-undefined"
 import unInfinity from "./un-infinity"
@@ -11,7 +12,7 @@ import unBracketNotation from "./un-bracket-notation";
 import unWhileLoop from "./un-while-loop";
 import unReturn from "./un-return";
 import unUseStrict from "./un-use-strict";
-import unNovalidStatement from "./un-novalid-statement";
+import unNoValidStatement from "./un-novalid-statement";
 import unConditionals from "./un-conditionals";
 
 const transformer: Transform = (file, api, options) => {
@@ -30,7 +31,7 @@ const transformer: Transform = (file, api, options) => {
         unWhileLoop,
         unReturn,
         unUseStrict,
-        unNovalidStatement,
+        unNoValidStatement,
         unConditionals,
     ]
     transformerQueue.forEach(transformer => {
@@ -40,7 +41,8 @@ const transformer: Transform = (file, api, options) => {
         const newSource = transformer({...file, source: source}, api, options)
         source = newSource || source
     })
-    return source
+
+    return format(source)
 };
 
 export default transformer
