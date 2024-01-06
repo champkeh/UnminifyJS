@@ -9,6 +9,10 @@ import unBlock from "./un-block";
 import unAssignmentExpression from "./un-assignment-expression";
 import unBracketNotation from "./un-bracket-notation";
 import unWhileLoop from "./un-while-loop";
+import unReturn from "./un-return";
+import unUseStrict from "./un-use-strict";
+import unNovalidStatement from "./un-novalid-statement";
+import unConditionals from "./un-conditionals";
 
 const transformer: Transform = (file, api, options) => {
     let source = file.source
@@ -24,6 +28,10 @@ const transformer: Transform = (file, api, options) => {
         unAssignmentExpression,
         unBracketNotation,
         unWhileLoop,
+        unReturn,
+        unUseStrict,
+        unNovalidStatement,
+        unConditionals,
     ]
     transformerQueue.forEach(transformer => {
         if (typeof source === "undefined") {

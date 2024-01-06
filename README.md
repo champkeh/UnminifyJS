@@ -193,6 +193,13 @@ const bar = () => {
 }
 ```
 
+### `un-novalid-statement`
+```diff
+- Object.create;
+- new WeakMap;
+- Object.prototype.hasOwnProperty;
+```
+
 ### `un-type-constructor` (Unsafe)
 
 Restore type constructors from minified code.
