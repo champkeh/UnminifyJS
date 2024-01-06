@@ -5,4 +5,8 @@ Element.prototype.setText = function (t) {
         var n = t.nodeType;
         1 !== n && 9 !== n && 11 !== n || (t.textContent = e)
     }(this, t)
+
+    obj["prop"]
+    obj["var"]
+    obj['a-b']
 }

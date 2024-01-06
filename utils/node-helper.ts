@@ -1,4 +1,4 @@
-import j, {ASTPath, } from "jscodeshift";
+import j, {ASTPath, BinaryExpression,} from "jscodeshift";
 
 
 export function pathInStructure<Type>(path: ASTPath, structure: Type | Type[]) {
@@ -15,4 +15,14 @@ export function pathInStructure<Type>(path: ASTPath, structure: Type | Type[]) {
 
 export function pathInTopLevel(path: ASTPath) {
     return !pathInStructure(path, [j.ForStatement, j.IfStatement])
+}
+
+export function isValidIdentifier(name: string) {
+    return /^[0-9a-zA-Z$]+$/.test(name)
+}
+
+export function swipeBinaryExpression(node: BinaryExpression) {
+    let tmp = node.left
+    node.left = node.right
+    node.right = tmp
 }

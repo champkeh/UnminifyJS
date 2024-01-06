@@ -6,6 +6,9 @@ import unNumericLiteral from "./un-numeric-literal"
 import unSequenceExpression from "./un-sequence-expression"
 import unVariableMerging from "./un-variable-merging"
 import unBlock from "./un-block";
+import unAssignmentExpression from "./un-assignment-expression";
+import unBracketNotation from "./un-bracket-notation";
+import unWhileLoop from "./un-while-loop";
 
 const transformer: Transform = (file, api, options) => {
     let source = file.source
@@ -18,6 +21,9 @@ const transformer: Transform = (file, api, options) => {
         unBlock,
         unVariableMerging,
         unSequenceExpression,
+        unAssignmentExpression,
+        unBracketNotation,
+        unWhileLoop,
     ]
     transformerQueue.forEach(transformer => {
         if (typeof source === "undefined") {

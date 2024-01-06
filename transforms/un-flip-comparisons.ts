@@ -1,23 +1,10 @@
-let j = require('jscodeshift')
+import {Transform} from "jscodeshift"
+import {swipeBinaryExpression} from "../utils/node-helper";
 
-// 需要使用 babylon 解析器
-j = j.withParser('babylon')
+const transformer: Transform = (file, api) => {
+    const {j} = api
+    const root = j(file.source)
 
-
-const source = `
-if ("dark" === theme) {}
-while (10 < count) {}
-`
-
-const root = j(source)
-
-function swipeBinaryExpression(node) {
-    let tmp = node.left
-    node.left = node.right
-    node.right = tmp
-}
-
-function handle(root) {
     root.find(j.BinaryExpression, {right: {type: 'Identifier'}})
         .filter(path => j(path.node.left).isOfType(j.Literal))
         .forEach(path => {
@@ -49,9 +36,8 @@ function handle(root) {
                     break
             }
         })
+
+    return root.toSource()
 }
 
-handle(root)
-
-
-console.log(root.toSource())
+export default transformer
