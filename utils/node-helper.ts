@@ -13,10 +13,6 @@ export function pathInStructure<Type>(path: ASTPath, structure: Type | Type[]) {
     return false
 }
 
-export function pathInTopLevel(path: ASTPath) {
-    return !pathInStructure(path, [j.ForStatement, j.IfStatement])
-}
-
 export function isValidIdentifier(name: string) {
     return /^[0-9a-zA-Z$]+$/.test(name)
 }

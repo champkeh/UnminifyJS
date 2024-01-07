@@ -6,33 +6,35 @@ j = j.withParser('babylon')
 
 
 const source = `
-var os;
-var isMacOS = "MacOS" === os;
-var isWindows = "Windows" === os;
-var isLinux = "Linux" === os;
-
-var c = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase()));
-
-var p = {
-    isMacOS: isMacOS,
-    isWin: isWindows,
-    isLinux: isLinux,
-    isSafari: c,
-}
+a = b = c = 1
 `
 
 const root = j(source)
 
 
 function handle(root) {
-    root
-        .find(j.VariableDeclarator)
-        .filter(path => path.node.id.name === 'c')
+    root.find(j.AssignmentExpression, node => {
+        console.log(j(node).paths()[0].name)
+        // return j(node).paths()[0].name === 'expression'
+    })
+        .filter(path => path.name === 'expression')
         .forEach(path => {
-            console.log(path.scope)
-            console.log(j(path).closestScope())
+            let node = path.node
+            const names = []
+            while (node.operator === '=' && node.left.type === 'Identifier') {
+                names.push(node.left.name)
+
+                if (node.right.type === 'AssignmentExpression') {
+                    node = node.right
+                } else {
+                    if (j(node.right).isOfType(j.Literal) || j(node.right).isOfType(j.ObjectExpression)) {
+                        const statements = names.map(name => j.template.statement`${name} = ${node.right};`)
+                        j(path.parent).replaceWith(statements)
+                    }
+                    break
+                }
+            }
         })
-        .renameTo('xxx')
 }
 
 handle(root)

@@ -12,8 +12,7 @@ import j, {
 
 // a(), b(), c() => a(); b(); c();
 function handleSequenceInTopLevelOrFunctionBody(root: Collection<any>) {
-    root.find(j.ExpressionStatement)
-        .filter(path => path.node.expression.type === 'SequenceExpression')
+    root.find(j.ExpressionStatement, {expression: {type: 'SequenceExpression'}})
         .replaceWith(path => {
             const sequenceExpression: SequenceExpression = path.node.expression as SequenceExpression
             const expressions = sequenceExpression.expressions
@@ -24,8 +23,7 @@ function handleSequenceInTopLevelOrFunctionBody(root: Collection<any>) {
 
 // () => (a(), b(), c()) -> () => { a(); b(); return c() }
 function handleSequenceInArrowFunctionBody(root: Collection<any>) {
-    root.find(j.ArrowFunctionExpression)
-        .filter(path => path.node.body.type === 'SequenceExpression')
+    root.find(j.ArrowFunctionExpression, {body: {type: 'SequenceExpression'}})
         .forEach(path => {
             const sequenceExpression: SequenceExpression = path.node.body as SequenceExpression
             const expressions = sequenceExpression.expressions
@@ -44,8 +42,7 @@ function handleSequenceInArrowFunctionBody(root: Collection<any>) {
 
 // `return a(), b()` -> `a(); return b()`
 function handleSequenceInReturn(root: Collection<any>) {
-    root.find(j.Function)
-        .filter(path => path.node.body.type === 'BlockStatement')
+    root.find(j.Function, {body: {type: 'BlockStatement'}})
         .forEach(path => {
             const blockStatement = path.node.body
 
@@ -70,8 +67,7 @@ function handleSequenceInReturn(root: Collection<any>) {
 
 // `throw a(), b()` -> `a(); throw b()`
 function handleSequenceInThrow(root: Collection<any>) {
-    root.find(j.ThrowStatement)
-        .filter(path => path.node.argument.type === 'SequenceExpression')
+    root.find(j.ThrowStatement, {argument: {type: 'SequenceExpression'}})
         .forEach(path => {
             const sequenceStatement: SequenceExpression = path.node.argument as SequenceExpression
             const expressions = sequenceStatement.expressions
@@ -86,8 +82,7 @@ function handleSequenceInThrow(root: Collection<any>) {
 
 // `if (a(), b(), c())` -> `a(); b(); if (c())`
 function handleSequenceInIf(root: Collection<any>) {
-    root.find(j.IfStatement)
-        .filter(path => path.node.test.type === 'SequenceExpression')
+    root.find(j.IfStatement, {test: {type: 'SequenceExpression'}})
         .forEach(path => {
             const sequenceExpression: SequenceExpression = path.node.test as SequenceExpression
             const expressions = sequenceExpression.expressions
@@ -101,8 +96,7 @@ function handleSequenceInIf(root: Collection<any>) {
 
 // `switch (a(), b(), c())` -> `a(); b(); switch (c())`
 function handleSequenceInSwitch(root: Collection<any>) {
-    root.find(j.SwitchStatement)
-        .filter(path => path.node.discriminant.type === 'SequenceExpression')
+    root.find(j.SwitchStatement, {discriminant: {type: 'SequenceExpression'}})
         .forEach(path => {
             const sequenceExpression: SequenceExpression = path.node.discriminant as SequenceExpression
             const expressions = sequenceExpression.expressions
@@ -116,10 +110,11 @@ function handleSequenceInSwitch(root: Collection<any>) {
 
 // `for (a(), b(); c(); d(), e()) {}` -> `a(); b(); for (; c(); ) { d(); e(); }`
 function handleSequenceInForInitUpdate(root: Collection<any>) {
-    root.find(j.ForStatement)
-        .filter(path =>
-            (path.node.init !== null && path.node.init.type === 'SequenceExpression') ||
-            (path.node.update !== null && path.node.update.type === 'SequenceExpression'))
+    root
+        .find(j.ForStatement, node => {
+            return (node.init !== null && node.init.type === 'SequenceExpression') ||
+                (node.update !== null && node.update.type === 'SequenceExpression')
+        })
         .forEach(path => {
             if (path.node.init && path.node.init.type === 'SequenceExpression') {
                 const sequenceExpression = path.node.init
@@ -140,13 +135,14 @@ function handleSequenceInForInitUpdate(root: Collection<any>) {
 
 // `for (let x = (a(), b(), c()), y = 1; x < 10; x++) {}` -> `a(); b(); for (let x = c(), y = 1; x < 10; x++) {}`
 function handleSequenceInForInitDeclarations(root: Collection<any>) {
-    root.find(j.ForStatement)
-        .filter(path =>
-            path.node.init !== null &&
-            path.node.init.type === 'VariableDeclaration' &&
-            path.node.init.declarations
-                .filter(declarator => declarator.type === 'VariableDeclarator')
-                .some(declarator => (declarator as VariableDeclarator).init?.type === 'SequenceExpression'))
+    root
+        .find(j.ForStatement, node => {
+            return node.init !== null &&
+                node.init.type === 'VariableDeclaration' &&
+                node.init.declarations
+                    .filter(declarator => declarator.type === 'VariableDeclarator')
+                    .some(declarator => (declarator as VariableDeclarator).init?.type === 'SequenceExpression')
+        })
         .forEach(path => {
             (path.node.init as VariableDeclaration)?.declarations
                 .filter(declarator => declarator.type === 'VariableDeclarator' && declarator.init?.type === 'SequenceExpression')
@@ -168,10 +164,12 @@ function handleSequenceInForInitDeclarations(root: Collection<any>) {
 // `let x = (a(), b(), c())` -> `a(); b(); let x = c()`
 // `const x = (a(), b()), y = 1, z = (c(), d())` -> `a(); c(); const x = b(), y = 1, z = d()`
 function handleSequenceInVariableDeclarations(root: Collection<any>) {
-    root.find(j.VariableDeclaration)
-        .filter(path => path.node.declarations
-            .filter(declarator => declarator.type === 'VariableDeclarator')
-            .some(declarator => (declarator as VariableDeclarator).init?.type === 'SequenceExpression'))
+    root
+        .find(j.VariableDeclaration, node => {
+            return node.declarations
+                .filter(declarator => declarator.type === 'VariableDeclarator')
+                .some(declarator => (declarator as VariableDeclarator).init?.type === 'SequenceExpression')
+        })
         .forEach(path => {
             path.node.declarations
                 .filter(declarator => (declarator as VariableDeclarator).init?.type === 'SequenceExpression')
@@ -184,7 +182,6 @@ function handleSequenceInVariableDeclarations(root: Collection<any>) {
                 })
         })
 }
-
 
 
 // (a = b())['c'] = d -> a = b(); a['c'] = d
@@ -220,7 +217,6 @@ const transformer: Transform = (file, api) => {
     // `let x = (a(), b(), c())` -> `a(); b(); let x = c()`
     // `const x = (a(), b()), y = 1, z = (c(), d())` -> `a(); c(); const x = b(), y = 1, z = d()`
     handleSequenceInVariableDeclarations(root)
-
 
 
     return root.toSource()

@@ -12,8 +12,8 @@ function collectConditionals(node: ConditionalExpression, conditionals: Conditio
 
 // a ? b() : c ? d() : e() ? f() : g()
 function handleConditionalExpression(root: Collection<any>) {
-    root.find(j.ConditionalExpression)
-        .filter(path => path.name === 'expression' && path.node.alternate.type === 'ConditionalExpression')
+    root.find(j.ConditionalExpression, {alternate: {type: 'ConditionalExpression'}})
+        .filter(path => path.name === 'expression')
         .forEach(path => {
             const node = path.node
             const stack: ConditionalExpression[] = []
@@ -45,8 +45,7 @@ function handleConditionalExpression(root: Collection<any>) {
 
 // let x = a ? b() : c ? d() : e() ? f() : g()
 function handleConditionalDeclaration(root: Collection<any>) {
-    root.find(j.VariableDeclaration)
-        .filter(path => path.node.declarations.length === 1 && path.node.declarations[0].init && path.node.declarations[0].init.type === 'ConditionalExpression')
+    root.find(j.VariableDeclaration, node => node.declarations.length === 1 && node.declarations[0].init && node.declarations[0].init.type === 'ConditionalExpression')
         .forEach(path => {
             const variableDeclarator = path.node.declarations[0]
             const kind = path.node.kind
@@ -57,8 +56,8 @@ function handleConditionalDeclaration(root: Collection<any>) {
 
             j(path).replaceWith(j.expressionStatement(path.node.declarations[0].init))
             j(path)
-                .find(j.ConditionalExpression)
-                .filter(path => path.name === 'expression' && path.node.alternate.type === 'ConditionalExpression')
+                .find(j.ConditionalExpression, {alternate: {type: 'ConditionalExpression'}})
+                .filter(path => path.name === 'expression')
                 .forEach(path => {
                     const node = path.node
                     const stack = []

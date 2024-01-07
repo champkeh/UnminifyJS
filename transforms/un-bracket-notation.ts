@@ -5,6 +5,9 @@ const transformer: Transform = (file, api) => {
     const {j} = api
     const root = j(file.source)
 
+    root.find(j.MemberExpression, node => {
+        return node.property.type === 'StringLiteral' && isValidIdentifier((node.property as StringLiteral).value)
+    })
     root.find(j.MemberExpression, {property: {type: 'StringLiteral'}})
         .filter(path => isValidIdentifier((path.node.property as StringLiteral).value))
         .forEach(path => {

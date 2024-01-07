@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "example": "node examples/index.js",
-    "transform": "jscodeshift -t transforms/index.ts examples/input/help.js --dry --print",
+    "transform": "jscodeshift -t transforms/index.ts examples/input/help.js --dry",
     "test": "jest"
   },
   "dependencies": {

@@ -5,19 +5,20 @@ const transformer: Transform = (file, api) => {
     const root = j(file.source)
 
     // var a = 1, b = true, c = func(d);
-    root.find(j.VariableDeclaration)
-        .filter(path => path.name !== 'init' && path.node.declarations.length > 1)
+    root.find(j.VariableDeclaration, node => node.declarations.length > 1)
+        .filter(path => path.name !== 'init')
         .replaceWith(path => {
             const kind = path.node.kind
             return path.node.declarations.map(declarator => j.variableDeclaration(kind, [declarator]))
         })
 
     // for (var i = 0, j = 0, k = 0; j < 10; k++) {}
-    root.find(j.ForStatement)
-        .filter(path =>
-            path.node.init !== null &&
-            path.node.init.type === 'VariableDeclaration' &&
-            path.node.init.declarations.length > 1)
+    root
+        .find(j.ForStatement, node => {
+            return node.init !== null &&
+                node.init.type === 'VariableDeclaration' &&
+                node.init.declarations.length > 1
+        })
         .forEach(path => {
             const variableDeclaration: VariableDeclaration = path.node.init as VariableDeclaration
             const kind = variableDeclaration.kind
@@ -29,12 +30,12 @@ const transformer: Transform = (file, api) => {
             variableDeclaration.declarations
                 .filter(node => node.type === 'VariableDeclarator')
                 .forEach(declarator => {
-                const name = ((declarator as VariableDeclarator).id as Identifier).name
-                if (!testIdentifiers.includes(name) && !updateIdentifiers.includes(name)) {
-                    j(path).insertBefore(j.variableDeclaration(kind, [declarator]))
-                    hoistDeclarations.push(declarator as VariableDeclarator)
-                }
-            })
+                    const name = ((declarator as VariableDeclarator).id as Identifier).name
+                    if (!testIdentifiers.includes(name) && !updateIdentifiers.includes(name)) {
+                        j(path).insertBefore(j.variableDeclaration(kind, [declarator]))
+                        hoistDeclarations.push(declarator as VariableDeclarator)
+                    }
+                })
             variableDeclaration.declarations = variableDeclaration.declarations.filter(declarator => !hoistDeclarations.includes(declarator as VariableDeclarator))
         })
 
