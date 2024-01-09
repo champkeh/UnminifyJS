@@ -2,7 +2,7 @@ jest.autoMockOff()
 
 import {defineInlineTest} from 'jscodeshift/src/testUtils'
 import * as transformer from '../un-numeric-literal'
-import {TestCase} from '../types'
+import {TestCase} from '../../types'
 
 
 const cases: TestCase[] = [

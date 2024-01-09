@@ -7,12 +7,13 @@
   "license": "MIT",
   "scripts": {
     "example": "node examples/index.js",
-    "transform": "jscodeshift -t transforms/index.ts examples/input/help.js --dry",
+    "transform": "jscodeshift -t index.ts examples/input/help.js --dry",
     "test": "jest"
   },
   "dependencies": {
     "@prettier/sync": "^0.3.0",
     "jscodeshift": "^0.15.1",
+    "ora": "5",
     "prettier": "^3.1.1"
   },
   "devDependencies": {
