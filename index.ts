@@ -44,7 +44,7 @@ const transformer: Transform = (file, api, options) => {
             return
         }
 
-        console.log(`${i}/${transformerQueue.length}: ${transformer.name}`)
+        // console.log(`${i}/${transformerQueue.length}: ${transformer.name}`)
         const newSource = transformer({...file, source: source}, api, options)
         source = newSource || source
     })
