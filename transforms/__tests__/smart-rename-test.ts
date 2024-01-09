@@ -61,6 +61,46 @@ let gql = 1
     let dispatchers = 1
     console.log(_dispatchers)
 }`
+    },
+
+    {
+        name: 'case 3',
+        input: `
+;(() => {
+    var h
+    
+    var i = "MacOS" === h
+    var isWin = "Windows" === h
+    
+    var p = {
+        isMacOS: i,
+        isWin: isWin,
+    }
+    
+    ;(function (a) {
+        if (i) {
+            console.log(1)
+        }
+    })()
+})()`,
+        output: `
+;(() => {
+    var h
+
+    var isMacOS = "MacOS" === h
+    var isWin = "Windows" === h
+
+    var p = {
+        isMacOS: isMacOS /* oldName: i */,
+        isWin: isWin,
+    }
+
+    ;(function (a) {
+        if (isMacOS) {
+            console.log(1)
+        }
+    })()
+})()`
     }
 ]
 

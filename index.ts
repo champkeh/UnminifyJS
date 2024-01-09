@@ -15,27 +15,35 @@ import unUseStrict from "./transforms/un-use-strict";
 import unUseLessStatement from "./transforms/un-useless-statement";
 import unConditionals from "./transforms/un-conditionals";
 import smartRename from "./transforms/smart-rename";
+import unFlipComparisons from "./transforms/un-flip-comparisons";
+import assignInIfTest from "./transforms/assign-in-if-test";
 
 
 const transformer: Transform = (file, api, options) => {
     let source = file.source
 
+    /**
+     * 对 transformer 执行顺序有要求：
+     */
     const transformerQueue = [
+        unUseStrict,
+        unUseLessStatement,
         unBoolean,
         unUndefined,
         unInfinity,
         unNumericLiteral,
-        unBlock,
         unVariableMerging,
+        unBlock,
         unSequenceExpression,
+        unConditionals,
+        assignInIfTest,
+        unBlock,
         unChainAssignment,
         unBracketNotation,
         unWhileLoop,
         unReturn,
-        unUseStrict,
-        unUseLessStatement,
-        unConditionals,
         smartRename,
+        unFlipComparisons,
     ]
     let i = 0
     transformerQueue.forEach(transformer => {

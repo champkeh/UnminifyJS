@@ -9,12 +9,19 @@ const cases: TestCase[] = [
     {
         name: 'case 1',
         input: `if ("dark" === theme) {}`,
-        output: `if (theme === "dark") {\n}`
+        output: `if (theme === "dark") {
+}`
     },
     {
         name: 'case 2',
         input: `while (10 < count) {}`,
         output: `while (count > 10) {}`
+    },
+    {
+        name: 'case 3',
+        input: `if (-1 !== (r = navigator.appVersion).indexOf("Win")) {}`,
+        output: `if ((r = navigator.appVersion).indexOf("Win") !== -1) {
+}`
     }
 ]
 

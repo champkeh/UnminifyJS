@@ -5,21 +5,12 @@ j = j.withParser('babylon')
 
 
 const source = `
-const {
-    gql: t,
-    dispatchers: o,
-    listener: i
-} = n;
-o.delete(t, i);
-
-let gql = 1
-
-;() => {
-    console.log(t)
-}
-;() => {
-    let dispatchers = 1
-    console.log(o)
+try {}
+catch (a) {
+    let err = 1
+    
+    try {}
+    catch (_err) {}
 }
 `
 
@@ -256,21 +247,14 @@ const root = j(source)
 function handle(root) {
 
     root
-        .find(j.VariableDeclarator, {id: {type: 'ObjectPattern'}})
+        .find(j.CatchClause, {param: {type: 'Identifier'}})
         .forEach(path => {
-            const properties = path.get('id', 'properties').value
+            const oldName = path.get('param').value.name
+            const newName = resolveNewName(oldName, 'err', path)
+            console.log(`${oldName} => ${newName}`)
 
-            for (const property of properties) {
-                if (property.value.type !== 'Identifier' || property.key.type !== 'Identifier') {
-                    continue
-                }
-                const oldName = property.value.name
-                const keyName = property.key.name
-                const newName = resolveNewName(oldName, keyName, path)
-
-                renameInPath(oldName, newName, path)
-                addComment(property.value, `oldName: ${oldName}`)
-            }
+            renameInPath(oldName, newName, path)
+            addComment(path.get('param').value, `oldName: ${oldName}`)
         })
 
 }

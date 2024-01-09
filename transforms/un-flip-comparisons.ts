@@ -6,7 +6,16 @@ const transformer: Transform = function unFlipComparisons(file, api) {
     const {j} = api
     const root = j(file.source)
 
-    root.find(j.BinaryExpression, node => node.right.type === 'Identifier' && j(node.left).isOfType(j.Literal))
+    root.find(j.BinaryExpression)
+        .filter(path => {
+            const leftNode = path.value.left
+            return j.Literal.check(leftNode) ||
+                (
+                    j.UnaryExpression.check(leftNode) &&
+                    leftNode.operator === '-' &&
+                    j.Literal.check(leftNode.argument)
+                )
+        })
         .forEach(path => {
             const node = path.node
             const operator = node.operator
