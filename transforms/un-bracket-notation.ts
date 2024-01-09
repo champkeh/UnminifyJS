@@ -1,4 +1,4 @@
-import {StringLiteral, Transform} from "jscodeshift"
+import j, {StringLiteral, Transform} from "jscodeshift"
 import {isValidIdentifier} from "../utils/node-helper";
 import {formatCode} from "../utils/formatter";
 
@@ -6,14 +6,22 @@ const transformer: Transform = function unBracketNotation(file, api) {
     const {j} = api
     const root = j(file.source)
 
-    root.find(j.MemberExpression, node => {
-        return node.property.type === 'StringLiteral' && isValidIdentifier((node.property as StringLiteral).value)
-    })
-    root.find(j.MemberExpression, {property: {type: 'StringLiteral'}})
-        .filter(path => isValidIdentifier((path.node.property as StringLiteral).value))
+    root
+        .find(j.MemberExpression, {property: {type: 'StringLiteral'}})
         .forEach(path => {
-            path.node.computed = false
-            path.node.property = j.identifier((path.node.property as StringLiteral).value)
+            const memberExpr = path.value
+            const propValue = (memberExpr.property as StringLiteral).value
+
+            if (/^\d+$/.test(propValue)) {
+                // 纯数字
+                memberExpr.property = j.numericLiteral(Number(propValue))
+            } else if (/^[^0-9][0-9a-zA-Z$]*$/.test(propValue)) {
+                // 合法标识符
+                memberExpr.property = j.identifier(propValue)
+                memberExpr.computed = false
+            } else {
+                // 保持不动
+            }
         })
 
     return formatCode(root.toSource())

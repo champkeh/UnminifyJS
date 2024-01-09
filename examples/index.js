@@ -20,15 +20,26 @@ const root = j(source)
 
 
 function handle(root) {
-    root.find(j.MemberExpression, node => {
-        return node.property.type === 'StringLiteral' && isValidIdentifier((node.property).value)
-    })
-    root.find(j.MemberExpression, {property: {type: 'StringLiteral'}})
-        .filter(path => isValidIdentifier((path.node.property).value))
-.forEach(path => {
-        path.node.computed = false
-        path.node.property = j.identifier((path.node.property).value)
-    })
+
+    root
+        .find(j.MemberExpression, {property: {type: 'StringLiteral'}})
+        .forEach(path => {
+            const memberExpr = path.value
+            const propValue = memberExpr.property.value
+
+            debugger
+
+            if (/^\d+$/.test(propValue)) {
+                // 纯数字
+                memberExpr.property = j.numericLiteral(Number(propValue))
+            } else if (/^[^0-9][0-9a-zA-Z$]*$/.test(propValue)) {
+                // 合法标识符
+                memberExpr.property = j.identifier(propValue)
+                memberExpr.computed = false
+            } else {
+
+            }
+        })
 }
 
 handle(root)
