@@ -1,40 +1,34 @@
 let j = require('jscodeshift')
-const {UnaryExpression} = require("jscodeshift");
 
 // 需要使用 babylon 解析器
 j = j.withParser('babylon')
 
+function isValidIdentifier(name) {
+    return /^[0-9a-zA-Z$]+$/.test(name)
+}
 
 const source = `
-a = b = c = 1
+obj[a]
+obj['a']
+obj['a']['b']['c']
+obj['a']['b+']['c']
+obj['a']['b+']['c']()
+obj['a']['1']['c']()
 `
 
 const root = j(source)
 
 
 function handle(root) {
-    root.find(j.AssignmentExpression, node => {
-        console.log(j(node).paths()[0].name)
-        // return j(node).paths()[0].name === 'expression'
+    root.find(j.MemberExpression, node => {
+        return node.property.type === 'StringLiteral' && isValidIdentifier((node.property).value)
     })
-        .filter(path => path.name === 'expression')
-        .forEach(path => {
-            let node = path.node
-            const names = []
-            while (node.operator === '=' && node.left.type === 'Identifier') {
-                names.push(node.left.name)
-
-                if (node.right.type === 'AssignmentExpression') {
-                    node = node.right
-                } else {
-                    if (j(node.right).isOfType(j.Literal) || j(node.right).isOfType(j.ObjectExpression)) {
-                        const statements = names.map(name => j.template.statement`${name} = ${node.right};`)
-                        j(path.parent).replaceWith(statements)
-                    }
-                    break
-                }
-            }
-        })
+    root.find(j.MemberExpression, {property: {type: 'StringLiteral'}})
+        .filter(path => isValidIdentifier((path.node.property).value))
+.forEach(path => {
+        path.node.computed = false
+        path.node.property = j.identifier((path.node.property).value)
+    })
 }
 
 handle(root)

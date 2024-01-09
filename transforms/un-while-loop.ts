@@ -1,6 +1,7 @@
 import {Transform} from "jscodeshift"
+import {formatCode} from "../utils/formatter";
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unWhileLoop(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -14,7 +15,9 @@ const transformer: Transform = (file, api) => {
             }
         })
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

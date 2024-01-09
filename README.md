@@ -193,7 +193,7 @@ const bar = () => {
 }
 ```
 
-### `un-novalid-statement`
+### `un-useless-statement`
 ```diff
 - Object.create;
 - new WeakMap;
@@ -216,37 +216,6 @@ const bar = () => {
 + dispatchers.delete(gql, listener);
 ```
 
-
-### `un-type-constructor` (Unsafe)
-
-Restore type constructors from minified code.
-
-```diff
-- +x;
-+ Number(x);
-
-- x + "";
-+ String(x);
-
-- [,,,];
-+ Array(3);
-```
-
-Unsafe:
-- BigInt: `+1n` will throw `TypeError`
-- Symbol: `Symbol('foo') + ""` will throw `TypeError`
-
-### `un-builtin-prototype`
-
-Convert function calls on instances of built-in objects to equivalent calls on their prototypes.
-
-```diff
-- [].splice.apply(a, [1, 2, b, c]);
-+ Array.prototype.splice.apply(a, [1, 2, b, c]);
-
-- (function() {}).call.apply(console.log, console, ["foo"]);
-+ Function.prototype.call.apply(console.log, console, ["foo"]);
-```
 
 ### `un-iife`
 

@@ -1,13 +1,31 @@
 jest.autoMockOff()
 
-const {defineInlineTest} = require('jscodeshift/dist/testUtils');
+import {defineInlineTest} from 'jscodeshift/src/testUtils'
+import * as transformer from '../un-boolean'
+import {TestCase} from '../types'
 
-const transform = require('../un-boolean')
-
+const cases: TestCase[] = [
+    {
+        name: 'case 1',
+        input: `!0`,
+        output: `true`
+    },
+    {
+        name: 'case 2',
+        input: `!1`,
+        output: `false`
+    },
+    {
+        name: 'case 3',
+        input: `!2`,
+        output: `!2`
+    }
+]
 
 describe('un-boolean', () => {
-    defineInlineTest(transform, null, '!0', 'true', '!0 => true')
-    defineInlineTest(transform, null, '!1', 'false', '1! => false')
+    for (const testCase of cases) {
+        describe(testCase.name, () => {
+            defineInlineTest(transformer, {}, testCase.input, testCase.output)
+        })
+    }
 })
-
-export {}

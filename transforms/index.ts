@@ -1,5 +1,5 @@
 import {type Transform} from "jscodeshift"
-import {format} from "../utils/formatter"
+import {formatCode} from "../utils/formatter"
 import unBoolean from "./un-boolean"
 import unUndefined from "./un-undefined"
 import unInfinity from "./un-infinity"
@@ -7,13 +7,14 @@ import unNumericLiteral from "./un-numeric-literal"
 import unSequenceExpression from "./un-sequence-expression"
 import unVariableMerging from "./un-variable-merging"
 import unBlock from "./un-block";
-import unAssignmentExpression from "./un-assignment-expression";
+import unChainAssignment from "./un-chain-assignment";
 import unBracketNotation from "./un-bracket-notation";
 import unWhileLoop from "./un-while-loop";
 import unReturn from "./un-return";
 import unUseStrict from "./un-use-strict";
-import unNoValidStatement from "./un-novalid-statement";
+import unUseLessStatement from "./un-useless-statement";
 import unConditionals from "./un-conditionals";
+import smartRename from "./smart-rename";
 
 const transformer: Transform = (file, api, options) => {
     let source = file.source
@@ -26,23 +27,25 @@ const transformer: Transform = (file, api, options) => {
         unBlock,
         unVariableMerging,
         unSequenceExpression,
-        unAssignmentExpression,
+        unChainAssignment,
         unBracketNotation,
         unWhileLoop,
         unReturn,
         unUseStrict,
-        unNoValidStatement,
+        unUseLessStatement,
         unConditionals,
+        smartRename,
     ]
     transformerQueue.forEach(transformer => {
         if (typeof source === "undefined") {
             return
         }
+        console.log(`start running ${transformer.name}...`)
         const newSource = transformer({...file, source: source}, api, options)
         source = newSource || source
     })
 
-    return format(source)
+    return formatCode(source)
 };
 
 export default transformer

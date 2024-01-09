@@ -8,6 +8,7 @@ import j, {
     VariableDeclaration,
     VariableDeclarator
 } from "jscodeshift"
+import {formatCode} from "../utils/formatter";
 
 
 // a(), b(), c() => a(); b(); c();
@@ -186,7 +187,7 @@ function handleSequenceInVariableDeclarations(root: Collection<any>) {
 
 // (a = b())['c'] = d -> a = b(); a['c'] = d
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unSequenceExpression(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -219,7 +220,9 @@ const transformer: Transform = (file, api) => {
     handleSequenceInVariableDeclarations(root)
 
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

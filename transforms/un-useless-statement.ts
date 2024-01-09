@@ -1,6 +1,7 @@
 import {Transform} from "jscodeshift"
+import { formatCode } from "../utils/formatter"
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unUselessStatement(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -12,7 +13,9 @@ const transformer: Transform = (file, api) => {
         .find(j.ExpressionStatement, {expression: {type: 'NewExpression'}})
         .remove()
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

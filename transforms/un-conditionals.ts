@@ -1,6 +1,7 @@
 // @ts-nocheck
 
-import j, {ASTNode, Collection, ConditionalExpression, Transform} from "jscodeshift"
+import j, {Collection, ConditionalExpression, Transform} from "jscodeshift"
+import {formatCode} from "../utils/formatter";
 
 function collectConditionals(node: ConditionalExpression, conditionals: ConditionalExpression[] = []) {
     conditionals.push(node)
@@ -93,7 +94,7 @@ function handleConditionalDeclaration(root: Collection<any>) {
         .replaceWith(path => path.node)
 }
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unConditionals(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -103,7 +104,9 @@ const transformer: Transform = (file, api) => {
     // let x = a ? b() : c ? d() : e() ? f() : g()
     handleConditionalDeclaration(root)
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

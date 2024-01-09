@@ -1,13 +1,6 @@
-var os;
-var isMacOS = "MacOS" === os;
-var isWindows = "Windows" === os;
-var isLinux = "Linux" === os;
-
-var c = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent.toLowerCase()));
-
-var p = {
-    isMacOS: isMacOS,
-    isWin: isWindows,
-    isLinux: isLinux,
-    isSafari: c,
-}
+exports.foo = exports.bar = (exports.zip = a = b.b = 1)
+a = 23
+a = b.c = d = {name: 'cc'}
+a = b = c = foo()
+a = b = c = foo
+a = b = c = [foo,,,]

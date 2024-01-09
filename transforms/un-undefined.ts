@@ -1,6 +1,7 @@
 import {Transform} from "jscodeshift"
+import {formatCode} from "../utils/formatter";
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unUndefined(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -13,7 +14,9 @@ const transformer: Transform = (file, api) => {
         }
     }).replaceWith(j.identifier("undefined"))
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

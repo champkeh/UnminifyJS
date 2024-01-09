@@ -1,7 +1,8 @@
 import {StringLiteral, Transform} from "jscodeshift"
 import {isValidIdentifier} from "../utils/node-helper";
+import {formatCode} from "../utils/formatter";
 
-const transformer: Transform = (file, api) => {
+const transformer: Transform = function unBracketNotation(file, api) {
     const {j} = api
     const root = j(file.source)
 
@@ -15,7 +16,9 @@ const transformer: Transform = (file, api) => {
             path.node.property = j.identifier((path.node.property as StringLiteral).value)
         })
 
-    return root.toSource()
+    return formatCode(root.toSource())
 }
 
 export default transformer
+
+export const parser = "babylon"

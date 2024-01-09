@@ -1,13 +1,27 @@
 jest.autoMockOff()
 
-const {defineInlineTest} = require('jscodeshift/dist/testUtils');
+import {defineInlineTest} from 'jscodeshift/src/testUtils'
+import * as transformer from '../un-infinity'
+import {TestCase} from '../types'
 
-const transform = require('../un-infinity')
 
+const cases: TestCase[] = [
+    {
+        name: 'case 1',
+        input: `let a = 1 / 0`,
+        output: `let a = Infinity`
+    },
+    {
+        name: 'case 2',
+        input: `let a = -1 / 0`,
+        output: `let a = -Infinity`
+    }
+]
 
 describe('un-infinity', () => {
-    defineInlineTest(transform, null, '1 / 0', 'Infinity', '1/0 => Infinity')
-    defineInlineTest(transform, null, '-1 / 0', '-Infinity', '-1/0 => -Infinity')
+    for (const testCase of cases) {
+        describe(testCase.name, () => {
+            defineInlineTest(transformer, {}, testCase.input, testCase.output)
+        })
+    }
 })
-
-export {}

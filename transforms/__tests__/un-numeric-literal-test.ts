@@ -1,13 +1,27 @@
 jest.autoMockOff()
 
-const {defineInlineTest} = require('jscodeshift/dist/testUtils');
+import {defineInlineTest} from 'jscodeshift/src/testUtils'
+import * as transformer from '../un-numeric-literal'
+import {TestCase} from '../types'
 
-const transform = require('../un-numeric-literal')
 
+const cases: TestCase[] = [
+    {
+        name: 'case 1',
+        input: `let a = 1e3`,
+        output: `1000/* 1e3 */`
+    },
+    {
+        name: 'case 2',
+        input: `0x10`,
+        output: `16/* 0x10 */`
+    }
+]
 
-describe.skip('un-numeric-literal', () => {
-    defineInlineTest(transform, null, 'let a = 1e3', '1000/* 1e3 */', '1e3 => 1000/* 1e3 */')
-    defineInlineTest(transform, null, '0x10', '16/* 0x10 */', '0x10 => 16/* 0x10 */')
+describe('un-numeric-literal', () => {
+    for (const testCase of cases) {
+        describe(testCase.name, () => {
+            defineInlineTest(transformer, {}, testCase.input, testCase.output)
+        })
+    }
 })
-
-export {}
