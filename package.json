@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "example": "node examples/index.js",
-    "transform": "jscodeshift -t index.ts examples/input/case.js -d -p -s",
+    "transform": "jscodeshift --run-in-band -t index.ts examples/input/main_v2.js",
+    "debug": "node --inspect=8888 --inspect-brk node_modules/.bin/jscodeshift -t index.ts examples/input/main_v2.js",
     "test": "jest"
   },
   "dependencies": {
